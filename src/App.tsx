@@ -18,6 +18,16 @@ function App() {
     setValue((prev) => prev + selectedValue.toString());
     setActive(selectedValue);
   };
+function prettifyInput(value: string) {
+  return value.replace(/\d+(\.\d+)?/g, (num) => {
+    const n = parseFloat(num);
+    if (isNaN(n)) return num;
+    return n.toLocaleString("ru-RU").replace(/\u00A0/g, " "); 
+  });
+}
+
+
+
 
   const handleActions = (action: string) => {
     const lastChar = value.slice(-1);
@@ -42,7 +52,6 @@ function App() {
       const num = parseFloat(value.replace("%", ""));
       result = (num / 100).toString();
     } else {
-      // mathjs bilan hisoblash
       const expression = value.replace(/(\d+)%/g, (_, num) => `(${num}/100)`);
       result = evaluate(expression).toString();
     }
@@ -96,7 +105,7 @@ function App() {
           <input
             type="text"
             readOnly={value.startsWith("Error")}
-            value={value}
+            value={prettifyInput(value)}
             style={{
               width: "90%",
               padding: "15px",
@@ -108,7 +117,10 @@ function App() {
               color: "white",
               marginBottom: "15px",
             }}
-            onChange={(e) => setValue(e.target.value)}
+             onChange={(e) => {
+    const raw = e.target.value.replace(/\s/g, ""); 
+    setValue(raw);
+  }}
           />
 
           <div
@@ -250,6 +262,7 @@ function App() {
                     fontSize: "18px",
                     fontWeight: "bold",
                     transition: "all 0.2s",
+                    
                   }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = "#cc7a00")
@@ -305,9 +318,10 @@ function App() {
                     borderRadius: "5px",
                     fontFamily: "monospace",
                     backgroundColor: index % 2 === 0 ? "#333" : "#2a2a2a",
+                    wordBreak: "break-all"
                   }}
                 >
-                  {item}
+                  {prettifyInput(item)}
                 </div>
               ))}
             </div>

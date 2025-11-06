@@ -82,7 +82,6 @@ input[type=number] {
 .history {
   flex: 1 1 200px;
   max-height: 90vh;
-  overflow-y: auto;
   max-width: 400px;
 }
 
