@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [value, setValue] = useState("");
@@ -37,7 +37,6 @@ function App() {
     try {
       let result;
       const hasOperator = /[+\-*/]/.test(value);
-
       if (value.includes("%") && !hasOperator) {
         const num = parseFloat(value.replace("%", ""));
         result = (num / 100).toString();
@@ -57,7 +56,7 @@ function App() {
 
       setActive(null);
     } catch {
-      setValue("Error");
+      setValue("");
     }
   };
 
@@ -94,7 +93,7 @@ function App() {
         >
           <input
             type="text"
-            readOnly={value === "Error" ? true : false}
+            readOnly={value.startsWith("Error")}
             value={value}
             style={{
               width: "90%",
