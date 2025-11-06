@@ -1,5 +1,5 @@
 import {  useState } from "react";
-
+import { evaluate } from "mathjs";
 function App() {
   const [value, setValue] = useState("");
   const [active, setActive] = useState<number | null>(null);
@@ -8,8 +8,8 @@ function App() {
   });
 
   const handleDeleteHistory = () => {
-    localStorage.removeItem("history"); // localStorage tozalash
-    setHistory([]); // UI-ni ham yangilash
+    localStorage.removeItem("history"); 
+    setHistory([]); 
   };
 
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "."];
@@ -33,32 +33,34 @@ function App() {
     setActive(null);
   };
 
-  const handleEqual = () => {
-    try {
-      let result;
-      const hasOperator = /[+\-*/]/.test(value);
-      if (value.includes("%") && !hasOperator) {
-        const num = parseFloat(value.replace("%", ""));
-        result = (num / 100).toString();
-      } else {
-        const expression = value.replace(/(\d+)%/g, (_, num) => `(${num}/100)`);
-        result = eval(expression).toString();
-      }
+ const handleEqual = () => {
+  try {
+    let result;
+    const hasOperator = /[+\-*/]/.test(value);
 
-      setValue(result);
-
-      if (hasOperator) {
-        const oldHistory = JSON.parse(localStorage.getItem("history") || "[]");
-        const newHistory = [...oldHistory, `${value} = ${result}`];
-        localStorage.setItem("history", JSON.stringify(newHistory));
-        setHistory(newHistory);
-      }
-
-      setActive(null);
-    } catch {
-      setValue("");
+    if (value.includes("%") && !hasOperator) {
+      const num = parseFloat(value.replace("%", ""));
+      result = (num / 100).toString();
+    } else {
+      // mathjs bilan hisoblash
+      const expression = value.replace(/(\d+)%/g, (_, num) => `(${num}/100)`);
+      result = evaluate(expression).toString();
     }
-  };
+
+    setValue(result);
+
+    if (hasOperator) {
+      const oldHistory = JSON.parse(localStorage.getItem("history") || "[]");
+      const newHistory = [...oldHistory, `${value} = ${result}`];
+      localStorage.setItem("history", JSON.stringify(newHistory));
+      setHistory(newHistory);
+    }
+
+    setActive(null);
+  } catch {
+    setValue("Error");
+  }
+};
 
   const handleReset = () => {
     setActive(null);
